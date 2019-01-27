@@ -129,7 +129,7 @@ public class WordsEndpoint {
 
                     int index = Math.min(5, dApiResult.size());
 
-                    String dApiWord = dApiResult.get(index).get("word").toString();
+                    String dApiWord = dApiResult.get(index-1).get("word").toString();
 
                     if (index == 1 || dApiWord.equals(tword)) {
                         int n, m;
