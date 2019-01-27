@@ -85,7 +85,7 @@ public class WordsEndpoint {
 
             Translate translate = TranslateOptions.getDefaultInstance().getService();
             Translation translation = translate.translate(word,
-                    Translate.TranslateOption.sourceLanguage("es"),
+                    Translate.TranslateOption.sourceLanguage("en"),
                     Translate.TranslateOption.targetLanguage("fr"),
                     Translate.TranslateOption.model("base"));
 
