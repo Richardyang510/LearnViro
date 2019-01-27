@@ -138,7 +138,7 @@ public class WordsEndpoint {
                     ArrayNode arrayNode = mapper.readValue(dictionaryApiResult, ArrayNode.class);
 
                     int index = Math.min(5, arrayNode.size());
-                    choices.add(arrayNode.get(index).get("word").toString())
+                    choices.add(arrayNode.get(index).get("word").toString());
                 }
 
                 out.set("data", choices);
