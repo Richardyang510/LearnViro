@@ -73,6 +73,9 @@ public class WordsEndpoint {
                     annotation.getAllFields().forEach((k, v) ->
                             System.out.printf("%s : %s\n", k, v.toString()));
 
+                    System.out.println(annotation.getDescription());
+
+
                 }
             }
 
