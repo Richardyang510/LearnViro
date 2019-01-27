@@ -1,19 +1,27 @@
 package com.example.nwhacks;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import androidx.core.content.FileProvider;
+
+import static java.util.Base64.getUrlEncoder;
 
 public class CameraActions {
     private final MainActivity mainActivity;
@@ -62,19 +70,30 @@ public class CameraActions {
 
     String encodeFileToBase64Binary(String currentPhotoPath) {
         File file = new File(currentPhotoPath);
-        String encodedfile = null;
-        try {
-            FileInputStream fileInputStreamReader = new FileInputStream(file);
-            byte[] bytes = new byte[(int) file.length()];
-            fileInputStreamReader.read(bytes);
-            encodedfile = Base64.encodeToString(bytes, Base64.DEFAULT);
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
+        Bitmap bmp = BitmapFactory.decodeFile(currentPhotoPath);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 50, bos);
+        InputStream in = new ByteArrayInputStream(bos.toByteArray());
+        byte[] byteArray = bos.toByteArray();
+        String encodedfile = java.util.Base64.getUrlEncoder().encodeToString(byteArray);
         return encodedfile;
+
+
+
+//        String encodedfile = null;
+//        try {
+//            FileInputStream fileInputStreamReader = new FileInputStream(file);
+//            byte[] bytes = new byte[(int) file.length()];
+//            fileInputStreamReader.read(bytes);
+//            encodedfile = Base64.encodeToString(bytes, Base64.DEFAULT);
+//        } catch (FileNotFoundException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        return encodedfile;
     }
 }
