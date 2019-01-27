@@ -87,9 +87,9 @@ public class WordsEndpoint {
             Translation translation = translate.translate(word,
                     Translate.TranslateOption.sourceLanguage("es"),
                     Translate.TranslateOption.targetLanguage("fr"),
-                    Translate.TranslateOption.model("nmt"));
+                    Translate.TranslateOption.model("base"));
 
-            System.out.printf("Translated Text:\nText: %s\n", translation.getTranslatedText());
+            System.out.println("Translated Text: " + translation.getTranslatedText());
 
 
         } catch (IOException e) {
