@@ -50,6 +50,8 @@ public class WordsEndpoint {
             // byte[] data = Files.readAllBytes(path);
             // ByteString imgBytes = ByteString.copyFrom(data);
 
+            System.out.println(payload.toString());
+
             String base64String = payload.get("data").toString();
             System.out.println(base64String);
 
