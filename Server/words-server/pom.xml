@@ -12,7 +12,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>fully.qualified.MainClass</mainClass>
+                            <mainClass>com.words.app.WordsApplication</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
