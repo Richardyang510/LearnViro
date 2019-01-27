@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Path("/words")
 public class WordsEndpoint {
@@ -102,50 +103,58 @@ public class WordsEndpoint {
 
             try {
 
-                String urls[] = {"https://api.datamuse.com/words?ml=" + tword + "&v=es",
-                        "https://api.datamuse.com/words?sl=" + tword + "&v=es",
-                        "https://api.datamuse.com/words?sp=" + tword + "&v=es"};
+                String dApiUrl = "https://api.datamuse.com/words";
+
+                String urlParams[] = {"?ml=" + tword + "&v=es", "?sl=" + tword + "&v=es", "?sp=" + tword + "&v=es"};
                 ArrayNode choices = JsonNodeFactory.instance.arrayNode();
                 choices.add(tword);
 
-                for(int i = 0;i < 4;++i){
+                for (int i = 0; i < 3; ++i) {
                     //Create connection
-                    URL url = new URL(urls[i]);
+                    URL url = new URL(dApiUrl + urlParams[i]);
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
 
-                    connection.setUseCaches(false);
-                    connection.setDoOutput(true);
-
-                    //Send request
-                    DataOutputStream wr = new DataOutputStream(
-                            connection.getOutputStream());
-                    wr.close();
-
-                    //Get Response
-                    InputStream is = connection.getInputStream();
-                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-                    StringBuilder getResponse = new StringBuilder(); // or StringBuffer if Java version 5+
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String line;
+                    StringBuilder dictionaryApiResult = new StringBuilder();
                     while ((line = rd.readLine()) != null) {
-                        getResponse.append(line);
-                        getResponse.append('\r');
+                        dictionaryApiResult.append(line);
                     }
                     rd.close();
 
-                    String dictionaryApiResult = getResponse.toString();
+                    System.out.println(dictionaryApiResult.toString());
 
-                    ArrayNode arrayNode = mapper.readValue(dictionaryApiResult, ArrayNode.class);
+                    ArrayNode dApiResult = mapper.readValue(dictionaryApiResult.toString(), ArrayNode.class);
 
-                    int index = Math.min(5, arrayNode.size());
-                    choices.add(arrayNode.get(index).get("word").toString());
+                    int index = Math.min(5, dApiResult.size());
+
+                    String dApiWord = dApiResult.get(index).get("word").toString();
+
+                    if (index == 1 || dApiWord.equals(tword)) {
+                        int n, m;
+                        Random rand = new Random();
+                        StringBuilder myName = new StringBuilder(dApiWord);
+                        n = rand.nextInt(dApiWord.length()) + 1;
+                        m = rand.nextInt(dApiWord.length()) + 1;
+                        n--;
+                        m--;
+                        char o = dApiUrl.charAt(n);
+                        myName.setCharAt(n, dApiWord.charAt(m));
+                        myName.setCharAt(m, o);
+                        dApiWord = myName.toString();
+                    }
+
+                    choices.add(dApiWord);
                 }
 
                 out.set("data", choices);
 
+
             } catch (Exception e) {
+                out.put("status", "not OK");
+                out.put("error", e.getMessage());
                 e.printStackTrace();
-                return null;
             } finally {
                 if (connection != null) {
                     connection.disconnect();
