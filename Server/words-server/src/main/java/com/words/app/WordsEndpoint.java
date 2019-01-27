@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.cloud.vision.v1.*;
 import com.google.protobuf.ByteString;
 
-import com.google.protobuf.Descriptors;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.ws.rs.Consumes;
@@ -18,9 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 @Path("/words")
 public class WordsEndpoint {
@@ -68,19 +65,17 @@ public class WordsEndpoint {
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
                     System.out.printf("Error: %s\n", res.getError().getMessage());
+                    out.put("status", "not OK");
+                    out.put("error", res.getError().getMessage());
                 }
 
                 for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
-                    Map<Descriptors.FieldDescriptor, Object> map = annotation.getAllFields();
-                    Iterator it = map.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry pair = (Map.Entry)it.next();
-                        System.out.println(pair.getKey() + " = " + pair.getValue());
-                        out.put(pair.getKey().toString(), pair.getValue().toString());
-                        it.remove(); // avoids a ConcurrentModificationException
-                    }
+                    annotation.getAllFields().forEach((k, v) ->
+                            System.out.printf("%s : %s\n", k, v.toString()));
+
                 }
             }
+
 
         } catch (IOException e) {
             //e.printStackTrace();
