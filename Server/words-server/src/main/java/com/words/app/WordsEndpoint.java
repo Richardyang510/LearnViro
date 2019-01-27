@@ -26,7 +26,7 @@ public class WordsEndpoint {
         System.out.println("post request called");
         try (ImageAnnotatorClient vision = ImageAnnotatorClient.create()) {
             // The path to the image file to annotate
-            String fileName = "resource/s-l300.jpg.jpg";
+            String fileName = "resource/s-l300.jpg";
             java.nio.file.Path path = Paths.get(fileName);
             byte[] data = Files.readAllBytes(path);
             ByteString imgBytes = ByteString.copyFrom(data);
