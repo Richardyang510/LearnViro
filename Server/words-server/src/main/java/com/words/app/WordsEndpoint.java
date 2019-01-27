@@ -44,7 +44,6 @@ public class WordsEndpoint {
 
             String base64String = payload.get("data").toString();
             System.out.println(base64String);
-            System.exit(0);
 
             byte[] data = Base64.decodeBase64(base64String.getBytes());
             ByteString imgBytes = ByteString.copyFrom(data);
