@@ -1,0 +1,12 @@
+user: ${USER:-asdf}
+pass: ${PASS:-asdf}
+url: ${URL:-asdf}
+
+server:
+  type: simple
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+      type: http
+      bindHost: localhost
+      port: 8080
