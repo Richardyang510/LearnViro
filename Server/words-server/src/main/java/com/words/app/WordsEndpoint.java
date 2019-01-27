@@ -69,11 +69,10 @@ public class WordsEndpoint {
 
                 for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
                     annotation.getAllFields().forEach((k, v) ->
-                            System.out.printf("%s : %s\n", k, v.toString()));
+                            out.put(k.getName(),v.toString()));
                 }
             }
-
-
+            
         } catch (IOException e) {
             //e.printStackTrace();
             out.put("status", "not OK");
