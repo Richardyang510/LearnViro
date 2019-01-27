@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.cloud.vision.v1.*;
 import com.google.protobuf.ByteString;
+import com.google.cloud.translate.*;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -62,6 +63,8 @@ public class WordsEndpoint {
             BatchAnnotateImagesResponse response = vision.batchAnnotateImages(requests);
             List<AnnotateImageResponse> responses = response.getResponsesList();
 
+            String word = "";
+
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
                     System.out.printf("Error: %s\n", res.getError().getMessage());
@@ -69,15 +72,24 @@ public class WordsEndpoint {
                     out.put("error", res.getError().getMessage());
                 }
 
+                word = res.getLabelAnnotationsList().get(0).getDescription();
+
                 for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
                     annotation.getAllFields().forEach((k, v) ->
                             System.out.printf("%s : %s\n", k, v.toString()));
 
-                    System.out.println(annotation.getDescription());
-
-
                 }
             }
+
+            System.out.println(word);
+
+            Translate translate = TranslateOptions.getDefaultInstance().getService();
+            Translation translation = translate.translate(word,
+                    Translate.TranslateOption.sourceLanguage("es"),
+                    Translate.TranslateOption.targetLanguage("fr"),
+                    Translate.TranslateOption.model("nmt"));
+
+            System.out.printf("Translated Text:\nText: %s\n", translation.getTranslatedText());
 
 
         } catch (IOException e) {
