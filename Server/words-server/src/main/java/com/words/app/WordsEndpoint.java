@@ -98,7 +98,12 @@ public class WordsEndpoint {
                     Translate.TranslateOption.targetLanguage("es"),
                     Translate.TranslateOption.model("base"));
 
-            tword = translation.getTranslatedText().substring(0, tword.indexOf(' '));
+            tword = translation.getTranslatedText();
+
+            if(tword.indexOf(' ') != -1){
+                tword = tword.substring(0, tword.indexOf(' '));
+            }
+
             System.out.println("Translated Text: " + tword);
 
             HttpURLConnection connection = null;
@@ -131,7 +136,11 @@ public class WordsEndpoint {
 
                     int index = Math.min(5, dApiResult.size());
 
-                    String dApiWord = dApiResult.get(index-1).get("word").toString().substring(0, tword.indexOf(' '));
+                    String dApiWord = dApiResult.get(index-1).get("word").toString();
+
+                    if(dApiWord.indexOf(' ') != -1){
+                        dApiWord = dApiWord.substring(0, dApiWord.indexOf(' '));
+                    }
 
                     if (index == 1 || dApiWord.equals(tword)) {
                         int n, m;
