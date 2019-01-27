@@ -10,10 +10,8 @@
     <properties>
         <dropwizard.version>1.3.5</dropwizard.version>
         <mysql-connector.version>8.0.13</mysql-connector.version>
-        <properties>
-            <maven.compiler.source>1.6</maven.compiler.source>
-            <maven.compiler.target>1.6</maven.compiler.target>
-        </properties>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
     </properties>
     <dependencies>
         <dependency>
