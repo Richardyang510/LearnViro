@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">NWHacks</string>
+    <string name="title_home">Home</string>
+    <string name="title_history">History</string>
+    <string name="action_search">Search</string>
+    <string name="action_sort">Sort</string>
+    <string name="action_theme">Theme</string>
+</resources>
