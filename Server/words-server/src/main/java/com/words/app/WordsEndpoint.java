@@ -1,6 +1,8 @@
 package com.words.app;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.cloud.vision.v1.*;
@@ -14,7 +16,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -22,6 +26,8 @@ import java.util.List;
 
 @Path("/words")
 public class WordsEndpoint {
+
+    ObjectMapper mapper = new ObjectMapper();
 
     public WordsEndpoint() {
     }
@@ -63,7 +69,7 @@ public class WordsEndpoint {
             BatchAnnotateImagesResponse response = vision.batchAnnotateImages(requests);
             List<AnnotateImageResponse> responses = response.getResponsesList();
 
-            String word = "";
+            String word = "", tword = "";
 
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
@@ -86,10 +92,65 @@ public class WordsEndpoint {
             Translate translate = TranslateOptions.getDefaultInstance().getService();
             Translation translation = translate.translate(word,
                     Translate.TranslateOption.sourceLanguage("en"),
-                    Translate.TranslateOption.targetLanguage("fr"),
+                    Translate.TranslateOption.targetLanguage("es"),
                     Translate.TranslateOption.model("base"));
 
-            System.out.println("Translated Text: " + translation.getTranslatedText());
+            tword = translation.getTranslatedText();
+            System.out.println("Translated Text: " + tword);
+
+            HttpURLConnection connection = null;
+
+            try {
+
+                String urls[] = {"https://api.datamuse.com/words?ml=" + tword + "&v=es",
+                        "https://api.datamuse.com/words?sl=" + tword + "&v=es",
+                        "https://api.datamuse.com/words?sp=" + tword + "&v=es"};
+                ArrayNode choices = JsonNodeFactory.instance.arrayNode();
+                choices.add(tword);
+
+                for(int i = 0;i < 4;++i){
+                    //Create connection
+                    URL url = new URL(urls[i]);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+
+                    connection.setUseCaches(false);
+                    connection.setDoOutput(true);
+
+                    //Send request
+                    DataOutputStream wr = new DataOutputStream(
+                            connection.getOutputStream());
+                    wr.close();
+
+                    //Get Response
+                    InputStream is = connection.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    StringBuilder getResponse = new StringBuilder(); // or StringBuffer if Java version 5+
+                    String line;
+                    while ((line = rd.readLine()) != null) {
+                        getResponse.append(line);
+                        getResponse.append('\r');
+                    }
+                    rd.close();
+
+                    String dictionaryApiResult = getResponse.toString();
+
+                    ArrayNode arrayNode = mapper.readValue(dictionaryApiResult, ArrayNode.class);
+
+                    int index = Math.min(5, arrayNode.size());
+                    choices.add(arrayNode.get(index).get("word").toString())
+                }
+
+                out.set("data", choices);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
 
 
         } catch (IOException e) {
